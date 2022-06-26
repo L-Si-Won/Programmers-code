@@ -1,31 +1,28 @@
 #include <string>
 #include <vector>
+#include <algorithm>
+#include <iostream>
 
 using namespace std;
 
-string solution(string new_id) {
-    string answer = "";
-    for(int i=0; i<new_id.length(); i++)
-        if(new_id[i]>='A' && new_id[i]<='Z')
-            new_id[i]=new_id[i]+32;
-    for(int i=0; i<new_id.length(); i++)
-        if(!(new_id[i]>='a' && new_id[i]<='z') && !(new_id[i]>='0' && new_id[i]<='9') && new_id[i]!='-' && new_id[i]!='_' && new_id[i]!='.')
-            new_id.erase(new_id.begin()+(i--));
-    for(int i=0; i<new_id.length()-1; i++)
-        if(new_id[i]=='.')
-            while(new_id[i+1]=='.')
-                new_id.erase(new_id.begin()+i+1);
-    if(new_id[0]=='.') new_id.erase(new_id.begin());
-    if(new_id[new_id.length()-1]=='.') new_id.erase(new_id.end()-1);
-    if(new_id=="") new_id="a";
-    if(new_id.length()>15)
-        while(new_id.length()>15) new_id.erase(new_id.begin()+15);
-    if(new_id[new_id.length()-1]=='.') new_id.erase(new_id.end()-1);
-    if(new_id.length()<3)
-        while(new_id.length()<3)
-            new_id+=new_id[new_id.length()-1];
+int solution(string s) {
+    int answer = s.length();
     
-            
-    answer=new_id;
+    for(int i=1; i<=s.length()/2; i++){
+        string temp="", some=s.substr(0, i);
+        int cnt=1;
+        for(int j=i; j<s.length(); j+=i){
+            if(some==s.substr(j, i)) cnt++;
+            else{
+                if(cnt>1) temp+=to_string(cnt);
+                temp+=some;
+                some=s.substr(j, i);
+                cnt=1;
+            }
+        }
+        if(cnt>1) temp+=to_string(cnt);
+        temp+=some;
+        answer=min(answer, (int)temp.length());
+    }
     return answer;
 }
