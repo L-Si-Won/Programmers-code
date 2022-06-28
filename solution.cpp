@@ -1,28 +1,37 @@
 #include <string>
 #include <vector>
-#include <algorithm>
-#include <iostream>
+#include <sstream>
+#include <map>
 
 using namespace std;
 
-int solution(string s) {
-    int answer = s.length();
+vector<string> solution(vector<string> record) {
+    vector<string> answer;
+    vector<string> state;
+    map<string, string> user;
     
-    for(int i=1; i<=s.length()/2; i++){
-        string temp="", some=s.substr(0, i);
-        int cnt=1;
-        for(int j=i; j<s.length(); j+=i){
-            if(some==s.substr(j, i)) cnt++;
-            else{
-                if(cnt>1) temp+=to_string(cnt);
-                temp+=some;
-                some=s.substr(j, i);
-                cnt=1;
-            }
+    for(int i=0; i<record.size(); i++){
+        stringstream ss(record[i]);
+        string str[3];
+        string token;
+        int idx=0;
+        while(ss >> token) str[idx++]=token;
+        
+        if(str[0]=="Enter"){
+            state.push_back("님이 들어왔습니다.");
+            user[str[1]]=str[2];
+            answer.push_back(str[1]);
         }
-        if(cnt>1) temp+=to_string(cnt);
-        temp+=some;
-        answer=min(answer, (int)temp.length());
+        else if(str[0]=="Leave"){
+            state.push_back("님이 나갔습니다.");
+            answer.push_back(str[1]);
+        }
+        else if(str[0]=="Change"){
+            user[str[1]]=str[2];
+        }
     }
+    for(int i=0; i<answer.size(); i++)
+        answer[i]=user[answer[i]]+state[i];
+
     return answer;
 }
