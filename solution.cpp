@@ -1,37 +1,62 @@
 #include <string>
 #include <vector>
-#include <sstream>
-#include <map>
 
 using namespace std;
 
-vector<string> solution(vector<string> record) {
-    vector<string> answer;
-    vector<string> state;
-    map<string, string> user;
-    
-    for(int i=0; i<record.size(); i++){
-        stringstream ss(record[i]);
-        string str[3];
-        string token;
-        int idx=0;
-        while(ss >> token) str[idx++]=token;
-        
-        if(str[0]=="Enter"){
-            state.push_back("님이 들어왔습니다.");
-            user[str[1]]=str[2];
-            answer.push_back(str[1]);
-        }
-        else if(str[0]=="Leave"){
-            state.push_back("님이 나갔습니다.");
-            answer.push_back(str[1]);
-        }
-        else if(str[0]=="Change"){
-            user[str[1]]=str[2];
+int solution(string s) {
+    int answer = 0;
+    string num="";
+    for(int i=0; i<s.size(); i++){
+        if(s[i]>='0' && s[i]<='9') num+=s[i];
+        else{
+            if(s[i]=='z'){ //0
+                num+='0';
+                i+=3;
+            }
+            else if(s[i]=='o'){ //1
+                num+='1';
+                i+=2;
+            }
+            else if(s[i]=='t'){ //2, 3
+                if(s[i+1]=='w'){
+                    num+='2';
+                    i+=2;
+                }
+                else if(s[i+1]=='h'){
+                    num+='3';
+                    i+=4;
+                }
+            }
+            else if(s[i]=='f'){ //4, 5
+                if(s[i+1]=='o'){
+                    num+='4';
+                    i+=3;
+                }
+                else if(s[i+1]=='i'){
+                    num+='5';
+                    i+=3;
+                }
+            }
+            else if(s[i]=='s'){ //6, 7
+               if(s[i+1]=='i'){
+                    num+='6';
+                    i+=2;
+                }
+                else if(s[i+1]=='e'){
+                    num+='7';
+                    i+=4;
+                }
+            }
+            else if(s[i]=='e'){ //8
+                num+='8';
+                i+=4;
+            }
+            else if(s[i]=='n'){ //9
+                num+='9';
+                i+=3;
+            }
         }
     }
-    for(int i=0; i<answer.size(); i++)
-        answer[i]=user[answer[i]]+state[i];
-
+    answer=stoi(num);
     return answer;
 }
