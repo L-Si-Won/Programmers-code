@@ -1,36 +1,58 @@
-#include <string>
 #include <vector>
-#include <iostream>
-#include <stack>
+#include <cstring>
+#include <algorithm>
+#include <queue>
 
 using namespace std;
 
-int solution(vector<vector<int>> board, vector<int> moves) {
-    int answer = 0;
-    stack<int> s; //바구니
+bool visit[100][100]={0, };
+int dx[]={1, 0, -1, 0};
+int dy[]={0, 1, 0, -1};
+
+int bfs(vector<vector<int>> arr, int x, int y, int m, int n){
+    queue<pair<int, int>> q;
+    q.push({x, y});
+    visit[x][y]=true;
+    int num=arr[x][y];
     
-    for(int i=0; i<moves.size(); i++){
-        int grap=moves[i]-1; //뽑는 열
-        if(board[board.size()-1][grap]==0) continue;
+    int cnt=1;
+    while(!q.empty()){
+        int cx=q.front().first;
+        int cy=q.front().second;
+        q.pop();
         
-        int doll;
-        for(int j=0; j<board.size(); j++){
-            if(board[j][grap]!=0){
-                doll=board[j][grap];
-                board[j][grap]=0;
-                break;
+        for(int i=0; i<4; i++){
+            int nx=cx+dx[i];
+            int ny=cy+dy[i];
+            if(nx>=0 && ny>=0 && nx<m && ny<n){
+                if(visit[nx][ny]==false && arr[nx][ny]==num){
+                    visit[nx][ny]=true;
+                    q.push({nx, ny});
+                    cnt++;
+                }
             }
         }
-        
-        if(s.size()==0) s.push(doll);
-        else{
-            if(s.top()==doll){
-                s.pop();
-                answer+=2;
+    }
+    return cnt;
+}
+
+vector<int> solution(int m, int n, vector<vector<int>> picture) {
+    memset(visit, false, sizeof(visit)); //초기화 필수!!!
+    
+    int area=0;
+    int MAX=0;
+    vector<int> answer;
+    
+    for(int i=0; i<m; i++){
+        for(int j=0; j<n; j++){
+            if(picture[i][j]!=0 && visit[i][j]==false){
+                MAX=max(MAX, bfs(picture, i, j, m, n));
+                area++;
             }
-            else s.push(doll);
         }
     }
     
+    answer.push_back(area);
+    answer.push_back(MAX);
     return answer;
 }
