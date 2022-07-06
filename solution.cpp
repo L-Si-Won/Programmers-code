@@ -1,58 +1,41 @@
+#include <string>
 #include <vector>
-#include <cstring>
 #include <algorithm>
-#include <queue>
 
 using namespace std;
 
-bool visit[100][100]={0, };
-int dx[]={1, 0, -1, 0};
-int dy[]={0, 1, 0, -1};
+int solution(int n, vector<string> data) {
+    int answer = 0;
 
-int bfs(vector<vector<int>> arr, int x, int y, int m, int n){
-    queue<pair<int, int>> q;
-    q.push({x, y});
-    visit[x][y]=true;
-    int num=arr[x][y];
+    char fs[8]={'A', 'C', 'F', 'J', 'M', 'N', 'R', 'T'};
+    int fac8=40320; //8!
     
-    int cnt=1;
-    while(!q.empty()){
-        int cx=q.front().first;
-        int cy=q.front().second;
-        q.pop();
-        
-        for(int i=0; i<4; i++){
-            int nx=cx+dx[i];
-            int ny=cy+dy[i];
-            if(nx>=0 && ny>=0 && nx<m && ny<n){
-                if(visit[nx][ny]==false && arr[nx][ny]==num){
-                    visit[nx][ny]=true;
-                    q.push({nx, ny});
-                    cnt++;
-                }
+    while(fac8--){
+        bool truth=true;
+        for(int i=0; i<n; i++){
+            char f1=data[i][0];
+            char f2=data[i][2];
+            char con=data[i][3];
+            int num=data[i][4]-'0';
+            
+            int idx1, idx2;
+            for(int j=0; j<8; j++){
+                if(fs[j]==f1) idx1=j;
+                if(fs[j]==f2) idx2=j;
+            }
+            
+            if(con=='='){
+                if(abs(idx1-idx2)!=num+1) truth=false;
+            }
+            else if(con=='<'){
+                if(abs(idx1-idx2)>=num+1) truth=false;
+            }
+            else if(con=='>'){
+                if(abs(idx1-idx2)<=num+1) truth=false;
             }
         }
+        if(truth==true) answer++;
+        next_permutation(fs, fs+8);
     }
-    return cnt;
-}
-
-vector<int> solution(int m, int n, vector<vector<int>> picture) {
-    memset(visit, false, sizeof(visit)); //초기화 필수!!!
-    
-    int area=0;
-    int MAX=0;
-    vector<int> answer;
-    
-    for(int i=0; i<m; i++){
-        for(int j=0; j<n; j++){
-            if(picture[i][j]!=0 && visit[i][j]==false){
-                MAX=max(MAX, bfs(picture, i, j, m, n));
-                area++;
-            }
-        }
-    }
-    
-    answer.push_back(area);
-    answer.push_back(MAX);
     return answer;
 }
