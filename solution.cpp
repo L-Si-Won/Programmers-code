@@ -1,13 +1,9 @@
-#include <string>
-#include <vector>
+#include <numeric>
 
 using namespace std;
 
-int solution(vector<int> absolutes, vector<bool> signs) {
-    int answer = 0;
-    for(int i=0; i<absolutes.size(); i++){
-        if(signs[i]==true) answer+=absolutes[i];
-        else answer-=absolutes[i];
-    }
+long long solution(int w,int h) {
+    long long answer = 0;
+    answer=(long long)w*(long long)h-(w+h-gcd(w, h));
     return answer;
 }
