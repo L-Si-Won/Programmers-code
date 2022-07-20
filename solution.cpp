@@ -1,32 +1,29 @@
 #include <string>
 #include <vector>
-#include <stack>
+#include <queue>
+#include <iostream>
 
 using namespace std;
 
-string solution(int n) {
-    string answer = "";
-    
-    //1,2,4는 각각 3진법의 1,2,0에 사상됨
-    //0이 4로 바뀌는 경우, 3진법에서는 한자리 올라가는 것이므로 위의 자리에서 -1해야함
-    
-    int mod=3;
-    int reminder;
-    stack<int> sum;
-    while(n){
-        reminder=n%mod;
-        if(reminder==0){
-            sum.push(4);
-            n=n/mod-1;
-        }
-        else{
-            sum.push(reminder);
-            n/=mod;
-        }
+vector<int> solution(vector<int> progresses, vector<int> speeds) {
+    vector<int> answer;
+    queue<int> day;
+    for(int i=0; i<speeds.size(); i++){
+        int remain=100-progresses[i];
+        if(remain%speeds[i]==0) day.push(remain/speeds[i]);
+        else day.push(remain/speeds[i]+1);
     }
-    while(!sum.empty()){
-        answer+=to_string(sum.top());
-        sum.pop();
+    while(!day.empty()){
+        int cur=day.front();
+        day.pop();
+        int cnt=1;
+        while(day.front()<=cur){
+            day.pop();
+            cnt++;
+            if(day.empty()) break;
+        }
+        answer.push_back(cnt);
     }
+    
     return answer;
 }
