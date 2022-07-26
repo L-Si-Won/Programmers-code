@@ -1,29 +1,19 @@
 #include <string>
 #include <vector>
+#include <algorithm>
 #include <queue>
-#include <iostream>
 
 using namespace std;
 
-vector<int> solution(vector<int> progresses, vector<int> speeds) {
-    vector<int> answer;
-    queue<int> day;
-    for(int i=0; i<speeds.size(); i++){
-        int remain=100-progresses[i];
-        if(remain%speeds[i]==0) day.push(remain/speeds[i]);
-        else day.push(remain/speeds[i]+1);
+int solution(vector<int> scoville, int K) {
+    int answer = 0;
+    priority_queue<int, vector<int>, greater<int>> q(scoville.begin(), scoville.end());
+    while(q.top()<K && q.size()>1){
+        int first=q.top(); q.pop();
+        int second=q.top(); q.pop();
+        q.push(second*2+first);
+        answer++;
     }
-    while(!day.empty()){
-        int cur=day.front();
-        day.pop();
-        int cnt=1;
-        while(day.front()<=cur){
-            day.pop();
-            cnt++;
-            if(day.empty()) break;
-        }
-        answer.push_back(cnt);
-    }
-    
+    if(q.top()<K) answer=-1;
     return answer;
 }
