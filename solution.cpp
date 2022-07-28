@@ -1,43 +1,38 @@
 #include <string>
-#include <vector>
-#include <iostream>
-#include <tuple>
+#include <unordered_set>
 #include <algorithm>
+#include <iostream>
 
 using namespace std;
 
-int solution(vector<string> lines) {
-    int answer = 0;
+int solution(int N, int number) {
+    int answer = -1;
     
-    vector<int> start_t, end_t;
+    unordered_set<int> s[8];
     
-    for(int i=0; i<lines.size(); i++){
-        int ih, im, is, process;
-        lines[i].erase(lines[i].end()-1);
-        
-        string h, m, s, ms;
-        h=lines[i].substr(11,2);
-        m=lines[i].substr(14,2);
-        s=lines[i].substr(17,2);
-        ms=lines[i].substr(20,3);
-        process=stod(lines[i].substr(24, 5))*1000;
-        
-        ih=stoi(h)*3600*1000;
-        im=stoi(m)*60*1000;
-        is=stoi(s)*1000+stoi(ms);
-        
-        start_t.push_back(ih+im+is-process+1);
-        end_t.push_back(ih+im+is);
+    int sum=0;
+    for(int i=0; i<8; i++){
+        sum=sum*10+N;
+        s[i].insert(sum);
     }
     
-    for(int i=0; i<lines.size(); i++){
-        int cur_t=end_t[i]+1000;
-        int temp_answer=1;
-        for(int j=i+1; j<lines.size(); j++){
-            int next_t=start_t[j];
-            if(cur_t>next_t) temp_answer++;
+    for(int i=1; i<8; i++){
+        for(int j=0; j<i; j++){
+            for(int a : s[j]){
+                for(int b : s[i-j-1]){
+                    s[i].insert(a+b);
+                    s[i].insert(a-b);
+                    s[i].insert(a*b);
+                    if(b!=0) s[i].insert(a/b);
+                }
+            }
         }
-        answer=max(answer, temp_answer);
+    }
+    for(int i=0; i<8; i++){
+        if(s[i].find(number)!=s[i].end()){
+            answer=i+1;
+            break;
+        }
     }
     
     return answer;
