@@ -1,48 +1,49 @@
 #include <string>
 #include <vector>
+#include <map>
+#include <algorithm>
 
 using namespace std;
 
-int solve(int rows, int columns, vector<int> queries, int arr[100][100]){
-    pair<int, int> lu={queries[0]-1, queries[1]-1}; //행, 열
-    pair<int, int> rd={queries[2]-1, queries[3]-1};
-    int temp=arr[lu.first][lu.second];
-    int MIN=temp;
+vector<string> solution(vector<string> orders, vector<int> course) {
+    vector<string> answer;
     
-    for(int i=lu.first; i<rd.first; i++){ //좌
-        MIN=min(MIN, arr[i][lu.second]);
-        arr[i][lu.second]=arr[i+1][lu.second];
-    }
-    
-    for(int i=lu.second; i<rd.second; i++){ //하
-        MIN=min(MIN, arr[rd.first][i]);
-        arr[rd.first][i]=arr[rd.first][i+1];
-    }
-    
-    for(int i=rd.first; i>lu.first; i--){ //우
-        MIN=min(MIN, arr[i][rd.second]);
-        arr[i][rd.second]=arr[i-1][rd.second];
-    }
-    
-    for(int i=rd.second; i>lu.second; i--){ //상
-        MIN=min(MIN, arr[lu.first][i]);
-        arr[lu.first][i]=arr[lu.first][i-1];
-    }
-    
-    arr[lu.first][lu.second+1]=temp;
+    // order 미리 정렬해두기
+    for(string &order: orders) sort(order.begin(), order.end());
+    for(auto c: course) {
+        map<string, int> m;
+        for(auto order: orders) {
+            if(order.length() > c) {
+                vector<bool> comb(order.length()-c, false);
+                for(int i=0; i<c; ++i) comb.push_back(true);
+                
+                // do-while & next_permutation으로 조합 구하기
+                do {
+                    string temp = "";
+                    for(int i=0; i<order.length(); ++i) {
+                        if(comb[i]) temp += order[i];
+                    }
+                    
+                    m[temp]++;
+                } while(next_permutation(comb.begin(), comb.end()));
+            }
+            else if(order.length() == c) m[order]++;
+        }
         
-    return MIN;
-}
-
-vector<int> solution(int rows, int columns, vector<vector<int>> queries) {
-    vector<int> answer;
-    int arr[100][100];
-    int num=1;
-    for(int i=0; i<rows; i++)
-        for(int j=0; j<columns; j++)
-            arr[i][j]=num++;
-    for(int i=0; i<queries.size(); i++)
-        answer.push_back(solve(rows, columns, queries[i], arr));
+        // 가장 많이 주문된 조합 찾기
+        int max_val = max_element(m.begin(), m.end(), 
+                                   [] (const pair<string, int> &a, const pair<string, int> &b) {
+                                       return a.second < b.second;
+                                   })->second;
+        if(max_val < 2) continue;
+        for(auto iter: m) {
+            if(iter.second == max_val) {
+                answer.push_back(iter.first);
+            }
+        }
+    }
+    
+    sort(answer.begin(), answer.end());
     
     return answer;
 }
