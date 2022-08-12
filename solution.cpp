@@ -1,49 +1,78 @@
 #include <string>
-#include <vector>
-#include <map>
-#include <algorithm>
+#include <iostream>
 
 using namespace std;
 
-vector<string> solution(vector<string> orders, vector<int> course) {
-    vector<string> answer;
-    
-    // order 미리 정렬해두기
-    for(string &order: orders) sort(order.begin(), order.end());
-    for(auto c: course) {
-        map<string, int> m;
-        for(auto order: orders) {
-            if(order.length() > c) {
-                vector<bool> comb(order.length()-c, false);
-                for(int i=0; i<c; ++i) comb.push_back(true);
-                
-                // do-while & next_permutation으로 조합 구하기
-                do {
-                    string temp = "";
-                    for(int i=0; i<order.length(); ++i) {
-                        if(comb[i]) temp += order[i];
-                    }
-                    
-                    m[temp]++;
-                } while(next_permutation(comb.begin(), comb.end()));
-            }
-            else if(order.length() == c) m[order]++;
+bool check(string s){ //올바른 괄호 문자열인지 판단
+    int open=0;
+    for(int i=0; i<s.length(); i++){
+        if(s[i]=='('){
+            open++;
         }
-        
-        // 가장 많이 주문된 조합 찾기
-        int max_val = max_element(m.begin(), m.end(), 
-                                   [] (const pair<string, int> &a, const pair<string, int> &b) {
-                                       return a.second < b.second;
-                                   })->second;
-        if(max_val < 2) continue;
-        for(auto iter: m) {
-            if(iter.second == max_val) {
-                answer.push_back(iter.first);
-            }
+        else if(s[i]==')'){
+            open--;
         }
+        if(open<0) return false;
     }
-    
-    sort(answer.begin(), answer.end());
-    
-    return answer;
+    return true;
 }
+
+string solve(string p){
+    //1
+    if(p=="") return p;
+    
+    //2
+    string u="", v="";
+    int open=0;
+    u+=p[0];
+    if(u=="(") open++;
+    else open--;
+    for(int i=1; i<p.length(); i++){
+        if(p[i]=='('){
+            open++;
+            u+=p[i];
+        }
+        else if(p[i]==')'){
+            open--;
+            u+=p[i];
+        }
+        if(open==0) break;
+    }
+    v=p;
+    v.erase(v.begin(), v.begin()+u.length());
+    
+    //3
+    if(check(u)) return u+solve(v);
+    
+    //4
+    else{
+        string emp="(";
+        emp+=solve(v)+")";
+        u=u.substr(1, u.length()-2);
+        for(int i=0; i<u.length(); i++){
+            if(u[i]=='(') emp+=')';
+            else emp+='(';
+        }
+        return emp;
+    }
+}
+
+string solution(string p) {
+    if(check(p)) return p;
+    return solve(p);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
