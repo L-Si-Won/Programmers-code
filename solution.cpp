@@ -1,78 +1,48 @@
 #include <string>
 #include <iostream>
+#include <vector>
+#include <unordered_map>
+#include <unordered_set>
+#include <algorithm>
 
 using namespace std;
 
-bool check(string s){ //올바른 괄호 문자열인지 판단
-    int open=0;
-    for(int i=0; i<s.length(); i++){
-        if(s[i]=='('){
-            open++;
-        }
-        else if(s[i]==')'){
-            open--;
-        }
-        if(open<0) return false;
-    }
-    return true;
-}
-
-string solve(string p){
-    //1
-    if(p=="") return p;
+int solution(string str1, string str2) {
+    //소문자로 통일
+    for(int i=0; i<str1.size(); i++)
+        if(str1[i]>='A' && str1[i]<='Z') str1[i]+=32;
+    for(int i=0; i<str2.size(); i++)
+        if(str2[i]>='A' && str2[i]<='Z') str2[i]+=32;
     
-    //2
-    string u="", v="";
-    int open=0;
-    u+=p[0];
-    if(u=="(") open++;
-    else open--;
-    for(int i=1; i<p.length(); i++){
-        if(p[i]=='('){
-            open++;
-            u+=p[i];
-        }
-        else if(p[i]==')'){
-            open--;
-            u+=p[i];
-        }
-        if(open==0) break;
-    }
-    v=p;
-    v.erase(v.begin(), v.begin()+u.length());
+    //문자 나누기
+    unordered_set<string> str;
+    unordered_map<string, int> m1;
+    unordered_map<string, int> m2;
     
-    //3
-    if(check(u)) return u+solve(v);
-    
-    //4
-    else{
-        string emp="(";
-        emp+=solve(v)+")";
-        u=u.substr(1, u.length()-2);
-        for(int i=0; i<u.length(); i++){
-            if(u[i]=='(') emp+=')';
-            else emp+='(';
+    for(int i=0; i<str1.size()-1; i++){
+        if((str1[i]>='a' && str1[i]<='z') && (str1[i+1]>='a' && str1[i+1]<='z')){
+            string temp=str1.substr(i, 2);
+            m1[temp]++;
+            str.insert(temp);
         }
-        return emp;
     }
+    for(int i=0; i<str2.size()-1; i++){
+        if((str2[i]>='a' && str2[i]<='z') && (str2[i+1]>='a' && str2[i+1]<='z')){
+            string temp=str2.substr(i, 2);
+            m2[temp]++;
+            str.insert(temp);
+        }
+    }
+    
+    //자카드 유사도 계산
+    int sum=0; //합집합 크기
+    int same=0; //교집합 크기
+    for(auto iter:str){
+        sum+=max(m1[iter], m2[iter]);
+        same+=min(m1[iter], m2[iter]);
+    }
+    
+    if(sum==0 && same==0) return 65536;
+    
+    return 65536*same/sum;
 }
-
-string solution(string p) {
-    if(check(p)) return p;
-    return solve(p);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
