@@ -6,3 +6,15 @@ WHERE B.VIEWS = (
     FROM USED_GOODS_BOARD
 )
 ORDER BY F.FILE_ID DESC
+
+
+-----------------------------------------------------------------------------------
+
+SELECT '/home/grep/src/' || B.BOARD_ID || '/' || F.FILE_ID || F.FILE_NAME || F.FILE_EXT
+FROM USED_GOODS_BOARD B INNER JOIN USED_GOODS_FILE F
+ON B.BOARD_ID = F.BOARD_ID
+WHERE B.VIEWS = (
+    SELECT MAX(VIEWS)
+    FROM USED_GOODS_BOARD
+)
+ORDER BY F.FILE_ID DESC
